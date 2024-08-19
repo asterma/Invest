@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Calculator</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            padding: 20px;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h1 class="text-center">Real Estate ROI Calculator</h1>
+            <form id="roiForm">
+                <div class="form-group">
+                    <label for="house_price">House Price:</label>
+                    <input type="number" class="form-control" id="house_price" name="house_price" required>
+                </div>
+                <div class="form-group">
+                    <label for="down_payment_ratio">Down Payment Ratio (%):</label>
+                    <input type="number" step="0.01" class="form-control" id="down_payment_ratio"
+                        name="down_payment_ratio" required>
+                </div>
+                <div class="form-group">
+                    <label for="interest_rate">Interest Rate (%):</label>
+                    <input type="number" step="0.01" class="form-control" id="interest_rate" name="interest_rate"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="monthly_rent">Monthly Rent:</label>
+                    <input type="number" class="form-control" id="monthly_rent" name="monthly_rent" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Calculate</button>
+            </form>
+        </div>
+        <div class="card result">
+            <h2 class="text-center">Results</h2>
+            <p>Total Down Payment: <span id="total_down_payment"></span></p>
+            <p>Monthly Payment: <span id="monthly_payment"></span></p>
+            <p>Return on Investment (ROI): <span id="roi"></span>%</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('roiForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const house_price = parseFloat(document.getElementById('house_price').value);
+            const down_payment_ratio = parseFloat(document.getElementById('down_payment_ratio').value) / 100;
+            const interest_rate = parseFloat(document.getElementById('interest_rate').value) / 100;
+            const monthly_rent = parseFloat(document.getElementById('monthly_rent').value);
+
+            fetch('/calculate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    house_price: house_price,
+                    down_payment_ratio: down_payment_ratio,
+                    interest_rate: interest_rate,
+                    monthly_rent: monthly_rent
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('total_down_payment').textContent = data.total_down_payment.toFixed(2);
+                    document.getElementById('monthly_payment').textContent = data.monthly_payment.toFixed(2);
+                    document.getElementById('roi').textContent = data.roi.toFixed(2);
+                });
+        });
+    </script>
+</body>
+
+</html>
